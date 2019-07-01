@@ -4,31 +4,30 @@ uid: DataViewsApi
 
 # DataViews
 
-APIs for working with data views.
+APIs for Working with Data Views
 
 ### Properties
 
 Property | Type | Required | Descriptions
  --- | --- | --- | ---
-Id | string | True | Id of the data view
-Name | string | False | Name of the data view
-Description | string | False | Description of the data view
-Queries | [QueryInfo] | True | A list of queries to select the data items to be displayed in the data view
+Id | string | False | Id of the Data View
+Name | string | False | Name of the Data View
+Description | string | False | Description of the Data View
+Queries | [QueryInfo] | True | A list of queries to select the data items to be displayed in the Data View
 GroupRules | [GroupRule] | False | A list of group rules to organize data items into data groups
 Mappings | Mappings | False | Defines the names of the columns and the stream properties that get mapped to them
-IndexDataType | string | True | Defines the index data type that index config uses
+IndexDataType | IndexDataType | True | Defines the index data type that index config uses
 IndexConfig | IndexConfig | False | Defines the index information from which to retrieve data. Currently, only interpolation mode is supported
 
 
 
  ## `IndexDataType` 
  The IndexDataType can have the following values: 
+
 Value | Type | Description
  --- | --- | ---
 DateTime | string | Use DateTime as index type
 
-
-***
 
 ## `Full Body Example` 
  ```json
@@ -39,20 +38,13 @@ DateTime | string | Use DateTime as index type
   "Queries": [
     {
       "Id": "pump",
-      "Query": {
-        "Resource": "Streams",
-        "Field": "Id",
-        "Name": null,
-        "Value": "TestPump",
-        "Function": "Contains"
-      }
+      "Query": "id:*TestPump*"
     }
   ],
   "GroupRules": [
     {
       "Id": "DefaultGroupRule",
-      "Type": "StreamName",
-      "TokenRules": null
+      "Type": "StreamName"
     }
   ],
   "Mappings": {
@@ -67,7 +59,6 @@ DateTime | string | Use DateTime as index type
           "ItemIdentifier": {
             "Resource": "Streams",
             "Field": "Id",
-            "Name": null,
             "Value": "{measurement}",
             "Function": "Equals"
           }
@@ -80,8 +71,7 @@ DateTime | string | Use DateTime as index type
         "MappingRule": {
           "PropertyPaths": [
             "path"
-          ],
-          "ItemIdentifier": null
+          ]
         },
         "IsKey": true,
         "DataType": "DateTime"
@@ -100,11 +90,9 @@ DateTime | string | Use DateTime as index type
         "MappingRule": {
           "PropertyPaths": [
             "path"
-          ],
-          "ItemIdentifier": null
+          ]
         },
-        "IsKey": false,
-        "DataType": null
+        "IsKey": false
       },
       {
         "Name": "column2",
@@ -115,13 +103,11 @@ DateTime | string | Use DateTime as index type
           "ItemIdentifier": {
             "Resource": "Streams",
             "Field": "Id",
-            "Name": null,
             "Value": "test",
             "Function": "Equals"
           }
         },
-        "IsKey": false,
-        "DataType": null
+        "IsKey": false
       },
       {
         "Name": "column3",
@@ -129,12 +115,11 @@ DateTime | string | Use DateTime as index type
           "SharedMappingRuleId": "shared mapping rule",
           "Token": "{measurement}"
         },
-        "IsKey": false,
-        "DataType": null
+        "IsKey": false
       }
     ]
   },
-  "IndexDataType": "DateTime",
+  "IndexDataType": 0,
   "IndexConfig": {
     "StartIndex": "2018-01-01T00:00:00Z",
     "EndIndex": "2018-01-02T00:00:00Z",
@@ -144,42 +129,38 @@ DateTime | string | Use DateTime as index type
 }
 ``` 
 
+***
+
 ## `Get Data Views`
 
-Get all created dataviews
+Get all created Data Views
 
 ### Request
 `GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/`
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 
-Skip:
+The number of data views to skip
 ```csharp
-Int32 skip [FromQuery] [Required] [No Default Value]
+Int32 skip [FromQuery] [Optional] [Default = 0]
 ```
 
 
-Count:
+The number of data views to display per page. Maximum count allowed is 1000
 ```csharp
-Int32 count [FromQuery] [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
+Int32 count [FromQuery] [Optional] [Default = 100]
 ```
 
 
@@ -187,7 +168,7 @@ CancellationToken token  [Optional] [Default = ""]
 
 #### 200
 
-OK - retrieved the data views (could be an empty array). Return type: [DataViewDefinition]
+OK - retrieved the Data Views (could be an empty array)
 
 ```json
 [
@@ -195,11 +176,72 @@ OK - retrieved the data views (could be an empty array). Return type: [DataViewD
   "Id": "String",
   "Name": "String",
   "Description": "String",
-  "Queries": "List`1",
-  "GroupRules": "List`1",
-  "Mappings": "Mappings object",
-  "IndexDataType": "String",
-  "IndexConfig": "IndexConfig object"
+  "Queries": [
+    {
+      "Id": "String",
+      "Query": "String"
+    }
+  ],
+  "GroupRules": [
+    {
+      "Id": "String",
+      "GroupRuleType": "GroupRuleType enumeration",
+      "TokenRules": {
+        "Tokens": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "Patterns": [
+          {
+            "QueryId": "String",
+            "Name": "String",
+            "Value": "String"
+          }
+        ]
+      }
+    }
+  ],
+  "Mappings": {
+    "TimeOfResolution": "DateTimeOffset",
+    "SharedMappingRules": [
+      {
+        "Id": "String",
+        "Token": "String",
+        "MappingRulePattern": {
+          "PropertyPaths": [
+            {
+              "Chars": "Char",
+              "Length": "Int32"
+            }
+          ],
+          "ItemIdentifier": {
+            "FilterResource": "FilterResource enumeration",
+            "FilterField": "FilterField enumeration",
+            "Name": "String",
+            "Value": "String",
+            "FilterFunction": "FilterFunction enumeration"
+          }
+        }
+      }
+    ],
+    "Columns": [
+      {
+        "Name": "String",
+        "MappingRule": {},
+        "IsKey": "Boolean",
+        "DataType": "String"
+      }
+    ]
+  },
+  "IndexDataType": "IndexDataType enumeration",
+  "IndexConfig": {
+    "StartIndex": "String",
+    "EndIndex": "String",
+    "DataRetrievalMode": "DataRetrievalMode enumeration",
+    "Interval": "String"
+  }
 }
 ]
 ```
@@ -217,34 +259,28 @@ Internal server error
 
 ## `Get Data View`
 
-Get a dataview by id
+Get a Data View by id
 
 ### Request
 `GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}`
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 
-Id of dataview:
+Id of Data View
 ```csharp
 string id  [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
 ```
 
 
@@ -252,18 +288,79 @@ CancellationToken token  [Optional] [Default = ""]
 
 #### 200
 
-OK - retrieved the data view. Return type: DataViewDefinition
+OK - retrieved the Data View
 
 ```json
 {
   "Id": "String",
   "Name": "String",
   "Description": "String",
-  "Queries": "List`1",
-  "GroupRules": "List`1",
-  "Mappings": "Mappings object",
-  "IndexDataType": "String",
-  "IndexConfig": "IndexConfig object"
+  "Queries": [
+    {
+      "Id": "String",
+      "Query": "String"
+    }
+  ],
+  "GroupRules": [
+    {
+      "Id": "String",
+      "GroupRuleType": "GroupRuleType enumeration",
+      "TokenRules": {
+        "Tokens": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "Patterns": [
+          {
+            "QueryId": "String",
+            "Name": "String",
+            "Value": "String"
+          }
+        ]
+      }
+    }
+  ],
+  "Mappings": {
+    "TimeOfResolution": "DateTimeOffset",
+    "SharedMappingRules": [
+      {
+        "Id": "String",
+        "Token": "String",
+        "MappingRulePattern": {
+          "PropertyPaths": [
+            {
+              "Chars": "Char",
+              "Length": "Int32"
+            }
+          ],
+          "ItemIdentifier": {
+            "FilterResource": "FilterResource enumeration",
+            "FilterField": "FilterField enumeration",
+            "Name": "String",
+            "Value": "String",
+            "FilterFunction": "FilterFunction enumeration"
+          }
+        }
+      }
+    ],
+    "Columns": [
+      {
+        "Name": "String",
+        "MappingRule": {},
+        "IsKey": "Boolean",
+        "DataType": "String"
+      }
+    ]
+  },
+  "IndexDataType": "IndexDataType enumeration",
+  "IndexConfig": {
+    "StartIndex": "String",
+    "EndIndex": "String",
+    "DataRetrievalMode": "DataRetrievalMode enumeration",
+    "Interval": "String"
+  }
 }
 ```
 
@@ -274,7 +371,7 @@ Unauthorized
 
 #### 404
 
-Specified data view not found
+Specified Data View not found
 
 
 #### 500
@@ -285,29 +382,29 @@ Internal server error
 
 ## `Create Data View`
 
-Create a new dataview
+Create a new Data View
 
 ### Request
 `POST api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/`
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 ### Parameters from request body: 
 
-Dataview definition object:
+DataViewDefinition object
 ```csharp
-DataViewDefinition dataViewDefinition [FromBody] [Required] [No Default Value]
+DataViewDefinition dataViewDefinitionDto [FromBody] [Required] [No Default Value]
 ```
 
 ```json
@@ -315,36 +412,152 @@ DataViewDefinition dataViewDefinition [FromBody] [Required] [No Default Value]
   "Id": "String",
   "Name": "String",
   "Description": "String",
-  "Queries": "List`1",
-  "GroupRules": "List`1",
-  "Mappings": "Mappings object",
-  "IndexDataType": "String",
-  "IndexConfig": "IndexConfig object"
+  "Queries": [
+    {
+      "Id": "String",
+      "Query": "String"
+    }
+  ],
+  "GroupRules": [
+    {
+      "Id": "String",
+      "GroupRuleType": "GroupRuleType enumeration",
+      "TokenRules": {
+        "Tokens": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "Patterns": [
+          {
+            "QueryId": "String",
+            "Name": "String",
+            "Value": "String"
+          }
+        ]
+      }
+    }
+  ],
+  "Mappings": {
+    "TimeOfResolution": "DateTimeOffset",
+    "SharedMappingRules": [
+      {
+        "Id": "String",
+        "Token": "String",
+        "MappingRulePattern": {
+          "PropertyPaths": [
+            {
+              "Chars": "Char",
+              "Length": "Int32"
+            }
+          ],
+          "ItemIdentifier": {
+            "FilterResource": "FilterResource enumeration",
+            "FilterField": "FilterField enumeration",
+            "Name": "String",
+            "Value": "String",
+            "FilterFunction": "FilterFunction enumeration"
+          }
+        }
+      }
+    ],
+    "Columns": [
+      {
+        "Name": "String",
+        "MappingRule": {},
+        "IsKey": "Boolean",
+        "DataType": "String"
+      }
+    ]
+  },
+  "IndexDataType": "IndexDataType enumeration",
+  "IndexConfig": {
+    "StartIndex": "String",
+    "EndIndex": "String",
+    "DataRetrievalMode": "DataRetrievalMode enumeration",
+    "Interval": "String"
+  }
 }
 ```
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
 
 ### Returns
 
 #### 201
 
-Successfully created a dataview definition. Return type: DataViewDefinition
+Successfully created a Data View Definition
 
 ```json
 {
   "Id": "String",
   "Name": "String",
   "Description": "String",
-  "Queries": "List`1",
-  "GroupRules": "List`1",
-  "Mappings": "Mappings object",
-  "IndexDataType": "String",
-  "IndexConfig": "IndexConfig object"
+  "Queries": [
+    {
+      "Id": "String",
+      "Query": "String"
+    }
+  ],
+  "GroupRules": [
+    {
+      "Id": "String",
+      "GroupRuleType": "GroupRuleType enumeration",
+      "TokenRules": {
+        "Tokens": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "Patterns": [
+          {
+            "QueryId": "String",
+            "Name": "String",
+            "Value": "String"
+          }
+        ]
+      }
+    }
+  ],
+  "Mappings": {
+    "TimeOfResolution": "DateTimeOffset",
+    "SharedMappingRules": [
+      {
+        "Id": "String",
+        "Token": "String",
+        "MappingRulePattern": {
+          "PropertyPaths": [
+            {
+              "Chars": "Char",
+              "Length": "Int32"
+            }
+          ],
+          "ItemIdentifier": {
+            "FilterResource": "FilterResource enumeration",
+            "FilterField": "FilterField enumeration",
+            "Name": "String",
+            "Value": "String",
+            "FilterFunction": "FilterFunction enumeration"
+          }
+        }
+      }
+    ],
+    "Columns": [
+      {
+        "Name": "String",
+        "MappingRule": {},
+        "IsKey": "Boolean",
+        "DataType": "String"
+      }
+    ]
+  },
+  "IndexDataType": "IndexDataType enumeration",
+  "IndexConfig": {
+    "StartIndex": "String",
+    "EndIndex": "String",
+    "DataRetrievalMode": "DataRetrievalMode enumeration",
+    "Interval": "String"
+  }
 }
 ```
 
@@ -366,35 +579,35 @@ Internal server error
 
 ## `Create Data View With Id`
 
-Create a new dataview
+Create a new Data View
 
 ### Request
 `POST api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}`
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 
-Id of dataview:
+Id of Data View
 ```csharp
 string id  [Required] [No Default Value]
 ```
 
 ### Parameters from request body: 
 
-Dataview definition object:
+DataViewDefinition object
 ```csharp
-DataViewDefinition dataViewDefinition [FromBody] [Required] [No Default Value]
+DataViewDefinition dataViewDefinitionDto [FromBody] [Required] [No Default Value]
 ```
 
 ```json
@@ -402,36 +615,152 @@ DataViewDefinition dataViewDefinition [FromBody] [Required] [No Default Value]
   "Id": "String",
   "Name": "String",
   "Description": "String",
-  "Queries": "List`1",
-  "GroupRules": "List`1",
-  "Mappings": "Mappings object",
-  "IndexDataType": "String",
-  "IndexConfig": "IndexConfig object"
+  "Queries": [
+    {
+      "Id": "String",
+      "Query": "String"
+    }
+  ],
+  "GroupRules": [
+    {
+      "Id": "String",
+      "GroupRuleType": "GroupRuleType enumeration",
+      "TokenRules": {
+        "Tokens": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "Patterns": [
+          {
+            "QueryId": "String",
+            "Name": "String",
+            "Value": "String"
+          }
+        ]
+      }
+    }
+  ],
+  "Mappings": {
+    "TimeOfResolution": "DateTimeOffset",
+    "SharedMappingRules": [
+      {
+        "Id": "String",
+        "Token": "String",
+        "MappingRulePattern": {
+          "PropertyPaths": [
+            {
+              "Chars": "Char",
+              "Length": "Int32"
+            }
+          ],
+          "ItemIdentifier": {
+            "FilterResource": "FilterResource enumeration",
+            "FilterField": "FilterField enumeration",
+            "Name": "String",
+            "Value": "String",
+            "FilterFunction": "FilterFunction enumeration"
+          }
+        }
+      }
+    ],
+    "Columns": [
+      {
+        "Name": "String",
+        "MappingRule": {},
+        "IsKey": "Boolean",
+        "DataType": "String"
+      }
+    ]
+  },
+  "IndexDataType": "IndexDataType enumeration",
+  "IndexConfig": {
+    "StartIndex": "String",
+    "EndIndex": "String",
+    "DataRetrievalMode": "DataRetrievalMode enumeration",
+    "Interval": "String"
+  }
 }
 ```
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
 
 ### Returns
 
 #### 201
 
-Successfully created a dataview definition. Return type: DataViewDefinition
+Successfully created a Data View Definition
 
 ```json
 {
   "Id": "String",
   "Name": "String",
   "Description": "String",
-  "Queries": "List`1",
-  "GroupRules": "List`1",
-  "Mappings": "Mappings object",
-  "IndexDataType": "String",
-  "IndexConfig": "IndexConfig object"
+  "Queries": [
+    {
+      "Id": "String",
+      "Query": "String"
+    }
+  ],
+  "GroupRules": [
+    {
+      "Id": "String",
+      "GroupRuleType": "GroupRuleType enumeration",
+      "TokenRules": {
+        "Tokens": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "Patterns": [
+          {
+            "QueryId": "String",
+            "Name": "String",
+            "Value": "String"
+          }
+        ]
+      }
+    }
+  ],
+  "Mappings": {
+    "TimeOfResolution": "DateTimeOffset",
+    "SharedMappingRules": [
+      {
+        "Id": "String",
+        "Token": "String",
+        "MappingRulePattern": {
+          "PropertyPaths": [
+            {
+              "Chars": "Char",
+              "Length": "Int32"
+            }
+          ],
+          "ItemIdentifier": {
+            "FilterResource": "FilterResource enumeration",
+            "FilterField": "FilterField enumeration",
+            "Name": "String",
+            "Value": "String",
+            "FilterFunction": "FilterFunction enumeration"
+          }
+        }
+      }
+    ],
+    "Columns": [
+      {
+        "Name": "String",
+        "MappingRule": {},
+        "IsKey": "Boolean",
+        "DataType": "String"
+      }
+    ]
+  },
+  "IndexDataType": "IndexDataType enumeration",
+  "IndexConfig": {
+    "StartIndex": "String",
+    "EndIndex": "String",
+    "DataRetrievalMode": "DataRetrievalMode enumeration",
+    "Interval": "String"
+  }
 }
 ```
 
@@ -447,7 +776,7 @@ Unauthorized
 
 #### 409
 
-Data view definition with the specified Id already exists
+Data View Definition with the specified Id already exists
 
 
 #### 500
@@ -456,37 +785,37 @@ Internal server error
 
 ***
 
-## `Update Data View`
+## `Create or Update Data View`
 
-Edit the dataview with specified Id
+Update the Data View with specified Id
 
 ### Request
 `PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}`
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 
-Id of dataview:
+Id of Data View
 ```csharp
 string id  [Required] [No Default Value]
 ```
 
 ### Parameters from request body: 
 
-Updated dataview definition object in the request body:
+Updated DataViewDefinition object in the request body
 ```csharp
-DataViewDefinition updates [FromBody] [Required] [No Default Value]
+DataViewDefinition dataViewDefinitionDto [FromBody] [Required] [No Default Value]
 ```
 
 ```json
@@ -494,38 +823,81 @@ DataViewDefinition updates [FromBody] [Required] [No Default Value]
   "Id": "String",
   "Name": "String",
   "Description": "String",
-  "Queries": "List`1",
-  "GroupRules": "List`1",
-  "Mappings": "Mappings object",
-  "IndexDataType": "String",
-  "IndexConfig": "IndexConfig object"
+  "Queries": [
+    {
+      "Id": "String",
+      "Query": "String"
+    }
+  ],
+  "GroupRules": [
+    {
+      "Id": "String",
+      "GroupRuleType": "GroupRuleType enumeration",
+      "TokenRules": {
+        "Tokens": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "Patterns": [
+          {
+            "QueryId": "String",
+            "Name": "String",
+            "Value": "String"
+          }
+        ]
+      }
+    }
+  ],
+  "Mappings": {
+    "TimeOfResolution": "DateTimeOffset",
+    "SharedMappingRules": [
+      {
+        "Id": "String",
+        "Token": "String",
+        "MappingRulePattern": {
+          "PropertyPaths": [
+            {
+              "Chars": "Char",
+              "Length": "Int32"
+            }
+          ],
+          "ItemIdentifier": {
+            "FilterResource": "FilterResource enumeration",
+            "FilterField": "FilterField enumeration",
+            "Name": "String",
+            "Value": "String",
+            "FilterFunction": "FilterFunction enumeration"
+          }
+        }
+      }
+    ],
+    "Columns": [
+      {
+        "Name": "String",
+        "MappingRule": {},
+        "IsKey": "Boolean",
+        "DataType": "String"
+      }
+    ]
+  },
+  "IndexDataType": "IndexDataType enumeration",
+  "IndexConfig": {
+    "StartIndex": "String",
+    "EndIndex": "String",
+    "DataRetrievalMode": "DataRetrievalMode enumeration",
+    "Interval": "String"
+  }
 }
 ```
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
 
 ### Returns
 
-#### 200
+#### 204
 
-OK - retrieved the data view. Return type: DataViewDefinition
+Data View successfully created or updated
 
-```json
-{
-  "Id": "String",
-  "Name": "String",
-  "Description": "String",
-  "Queries": "List`1",
-  "GroupRules": "List`1",
-  "Mappings": "Mappings object",
-  "IndexDataType": "String",
-  "IndexConfig": "IndexConfig object"
-}
-```
 
 #### 400
 
@@ -539,7 +911,7 @@ Unauthorized
 
 #### 404
 
-Specified data view not found
+Specified Data View not found
 
 
 #### 500
@@ -550,34 +922,28 @@ Internal server error
 
 ## `Delete Data View`
 
-Delete the dataview with specified Id
+Delete the Data View with specified Id
 
 ### Request
 `DELETE api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}`
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 
-Id of dataview:
+Id of Data View
 ```csharp
 string id  [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
 ```
 
 
@@ -585,7 +951,7 @@ CancellationToken token  [Optional] [Default = ""]
 
 #### 204
 
-Successfully deleted the data view
+Successfully deleted the Data View
 
 
 #### 403
@@ -595,7 +961,1439 @@ Unauthorized
 
 #### 404
 
-Specified data view not found
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Get Data View Access Control List`
+
+Get the Data View Access Control List for Data View with specified Id
+
+### Request
+`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/accesscontrol`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 200
+
+OK - retrieved the Data View Access Control List.
+                 See [Role-based access control](https://ocs-docs.osisoft.com/Documentation/Access_Control.html) for more information
+
+```json
+{
+  "RoleTrusteeAccessControlEntries": [
+    {
+      "Trustee": {
+        "TrusteeType": "TrusteeType enumeration",
+        "ObjectId": "String",
+        "TenantId": "String"
+      },
+      "AccessType": "AccessType enumeration",
+      "AccessRights": "UInt64"
+    }
+  ]
+}
+```
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Get Data View Owner`
+
+Get the Data View owner for Data View with specified Id
+
+### Request
+`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/owner`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 200
+
+OK - retrieved the Data View owner
+
+```json
+{
+  "TrusteeType": "TrusteeType enumeration",
+  "ObjectId": "String",
+  "TenantId": "String"
+}
+```
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Update Data View Access Control List`
+
+Update the Data View Access Control List for Data View with specified Id
+
+### Request
+`PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/accesscontrol`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+### Parameters from request body: 
+
+Updated Access Control List
+```csharp
+AccessControlList acl [FromBody] [Required] [No Default Value]
+```
+
+```json
+{
+  "RoleTrusteeAccessControlEntries": [
+    {
+      "Trustee": {
+        "TrusteeType": "TrusteeType enumeration",
+        "ObjectId": "String",
+        "TenantId": "String"
+      },
+      "AccessType": "AccessType enumeration",
+      "AccessRights": "UInt64"
+    }
+  ]
+}
+```
+
+### Returns
+
+#### 204
+
+Successfully updated the Data View Access Control List
+
+
+#### 400
+
+Bad request
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Update Data View Owner`
+
+Update the Data View owner for Data View with specified Id
+
+### Request
+`PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/owner`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+### Parameters from request body: 
+
+Updated owner
+```csharp
+Trustee owner [FromBody] [Required] [No Default Value]
+```
+
+```json
+{
+  "TrusteeType": "TrusteeType enumeration",
+  "ObjectId": "String",
+  "TenantId": "String"
+}
+```
+
+### Returns
+
+#### 204
+
+Successfully updated the Data View owner
+
+
+#### 400
+
+Bad request
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Get Data View Name`
+
+Get Data View name by Data View id
+
+### Request
+`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/name`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 200
+
+OK - retrieved the Data View name
+
+```json
+{
+  "Chars": "Char",
+  "Length": "Int32"
+}
+```
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Update Data View Name`
+
+Update Data View name specified by Data View id
+
+### Request
+`PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/name`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+### Parameters from request body: 
+
+Updated name in the request body
+```csharp
+string name [FromBody] [Required] [No Default Value]
+```
+
+```json
+{
+  "Chars": "Char",
+  "Length": "Int32"
+}
+```
+
+### Returns
+
+#### 204
+
+Successfully updated the Data View name
+
+
+#### 400
+
+Bad request
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Get Data View Description`
+
+Get Data View description by Data View id
+
+### Request
+`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/description`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 200
+
+OK - retrieved the Data View description
+
+```json
+{
+  "Chars": "Char",
+  "Length": "Int32"
+}
+```
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Update Data View Description`
+
+Update Data View description specified by Data View id
+
+### Request
+`PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/description`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+### Parameters from request body: 
+
+Updated description in the request body
+```csharp
+string description [FromBody] [Required] [No Default Value]
+```
+
+```json
+{
+  "Chars": "Char",
+  "Length": "Int32"
+}
+```
+
+### Returns
+
+#### 204
+
+Successfully updated the Data View description
+
+
+#### 400
+
+Bad request
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Delete Data View Description`
+
+Delete Data View description specified by Data View id
+
+### Request
+`DELETE api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/description`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 204
+
+Successfully deleted the Data View description
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Get Data View Queries`
+
+Get Data View queries by Data View id
+
+### Request
+`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/queries`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 200
+
+OK - retrieved the Data View queries
+
+```json
+[
+{
+  "Id": "String",
+  "Query": "String"
+}
+]
+```
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Update Data View Queries`
+
+Update Data View queries specified by Data View id
+
+### Request
+`PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/queries`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+### Parameters from request body: 
+
+Updated queries in the request body
+```csharp
+[QueryInfo] queriesDto [FromBody] [Required] [No Default Value]
+```
+
+```json
+[
+{
+  "Id": "String",
+  "Query": "String"
+}
+]
+```
+
+### Returns
+
+#### 204
+
+Successfully updated the Data View queries
+
+
+#### 400
+
+Bad request
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Get Data View Group Rules`
+
+Get Data View group rules by Data View id
+
+### Request
+`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/grouprules`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 200
+
+OK - retrieved the Data View group rules
+
+```json
+[
+{
+  "Id": "String",
+  "GroupRuleType": "GroupRuleType enumeration",
+  "TokenRules": {
+    "Tokens": [
+      {
+        "Chars": "Char",
+        "Length": "Int32"
+      }
+    ],
+    "Patterns": [
+      {
+        "QueryId": "String",
+        "Name": "String",
+        "Value": "String"
+      }
+    ]
+  }
+}
+]
+```
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Update Data View Group Rules`
+
+Update Data View group rules specified by Data View id
+
+### Request
+`PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/grouprules`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+### Parameters from request body: 
+
+Updated group rules in the request body
+```csharp
+[GroupRule] groupRulesDto [FromBody] [Required] [No Default Value]
+```
+
+```json
+[
+{
+  "Id": "String",
+  "GroupRuleType": "GroupRuleType enumeration",
+  "TokenRules": {
+    "Tokens": [
+      {
+        "Chars": "Char",
+        "Length": "Int32"
+      }
+    ],
+    "Patterns": [
+      {
+        "QueryId": "String",
+        "Name": "String",
+        "Value": "String"
+      }
+    ]
+  }
+}
+]
+```
+
+### Returns
+
+#### 204
+
+Successfully updated the Data View group rules
+
+
+#### 400
+
+Bad request
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Delete Data View Group Rules`
+
+Delete Data View group rules specified by Data View id
+
+### Request
+`DELETE api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/grouprules`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 204
+
+Successfully deleted the Data View group rules
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Get Data View Mappings`
+
+Get Data View mappings by Data View id
+
+### Request
+`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/mappings`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 200
+
+OK - retrieved the Data View mappings
+
+```json
+{
+  "TimeOfResolution": "DateTimeOffset",
+  "SharedMappingRules": [
+    {
+      "Id": "String",
+      "Token": "String",
+      "MappingRulePattern": {
+        "PropertyPaths": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "ItemIdentifier": {
+          "FilterResource": "FilterResource enumeration",
+          "FilterField": "FilterField enumeration",
+          "Name": "String",
+          "Value": "String",
+          "FilterFunction": "FilterFunction enumeration"
+        }
+      }
+    }
+  ],
+  "Columns": [
+    {
+      "Name": "String",
+      "MappingRule": {},
+      "IsKey": "Boolean",
+      "DataType": "String"
+    }
+  ]
+}
+```
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Update Data View Mappings`
+
+Update Data View mappings specified by Data View id
+
+### Request
+`PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/mappings`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+### Parameters from request body: 
+
+Updated mappings in the request body
+```csharp
+Mappings mappingsDto [FromBody] [Required] [No Default Value]
+```
+
+```json
+{
+  "TimeOfResolution": "DateTimeOffset",
+  "SharedMappingRules": [
+    {
+      "Id": "String",
+      "Token": "String",
+      "MappingRulePattern": {
+        "PropertyPaths": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "ItemIdentifier": {
+          "FilterResource": "FilterResource enumeration",
+          "FilterField": "FilterField enumeration",
+          "Name": "String",
+          "Value": "String",
+          "FilterFunction": "FilterFunction enumeration"
+        }
+      }
+    }
+  ],
+  "Columns": [
+    {
+      "Name": "String",
+      "MappingRule": {},
+      "IsKey": "Boolean",
+      "DataType": "String"
+    }
+  ]
+}
+```
+
+### Returns
+
+#### 204
+
+Successfully updated the Data View mappings
+
+
+#### 400
+
+Bad request
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Delete Data View Mappings`
+
+Delete Data View mappings specified by Data View id
+
+### Request
+`DELETE api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/mappings`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 204
+
+Successfully deleted the Data View mappings
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Get Data View Index Data Type`
+
+Get Data View index data type by Data View id
+
+### Request
+`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/indexdatatype`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 200
+
+OK - retrieved the Data View index data type
+
+```json
+{
+  "Chars": "Char",
+  "Length": "Int32"
+}
+```
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Update Data View Index Data Type`
+
+Update Data View index data type specified by Data View id
+
+### Request
+`PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/indexdatatype`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+### Parameters from request body: 
+
+Updated index data type in the request body
+```csharp
+IndexDataType indexDataTypeDto [FromBody] [Required] [No Default Value]
+```
+
+```json
+{}
+```
+
+### Returns
+
+#### 204
+
+Successfully updated the Data View index data type
+
+
+#### 400
+
+Bad request
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Get Data View Index Config`
+
+Get Data View index config by Data View id
+
+### Request
+`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/indexconfig`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 200
+
+OK - retrieved the Data View index config
+
+```json
+{
+  "StartIndex": "String",
+  "EndIndex": "String",
+  "DataRetrievalMode": "DataRetrievalMode enumeration",
+  "Interval": "String"
+}
+```
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Update Data View Index Config`
+
+Update Data View index config specified by Data View id
+
+### Request
+`PUT api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/indexconfig`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+### Parameters from request body: 
+
+Updated index config in the request body
+```csharp
+IndexConfig indexDto [FromBody] [Required] [No Default Value]
+```
+
+```json
+{
+  "StartIndex": "String",
+  "EndIndex": "String",
+  "DataRetrievalMode": "DataRetrievalMode enumeration",
+  "Interval": "String"
+}
+```
+
+### Returns
+
+#### 204
+
+Successfully updated the Data View index config
+
+
+#### 400
+
+Bad request
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
+
+
+#### 500
+
+Internal server error
+
+***
+
+## `Delete Data View Index Config`
+
+Delete Data View index config specified by Data View id
+
+### Request
+`DELETE api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/indexconfig`
+
+### Parameters
+
+Id of tenant
+```csharp
+string tenantId  [Required] [No Default Value]
+```
+
+
+Id of namespace
+```csharp
+string namespaceId  [Required] [No Default Value]
+```
+
+
+Id of Data View
+```csharp
+string id  [Required] [No Default Value]
+```
+
+
+### Returns
+
+#### 204
+
+Successfully deleted the Data View index config
+
+
+#### 403
+
+Unauthorized
+
+
+#### 404
+
+Specified Data View not found
 
 
 #### 500
@@ -606,64 +2404,64 @@ Internal server error
 
 ## `Preview Data View Data`
 
-Get data preview based on created data view definition
+Get data preview based on created Data View definition
 
 ### Request
 `GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/preview/interpolated`
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 
-Id of dataview:
+Id of Data View
 ```csharp
 string id  [Required] [No Default Value]
 ```
 
 
-Start index for the data:
+Start index for the data
 ```csharp
 string startIndex [FromQuery] [Required] [No Default Value]
 ```
 
 
-End index for the data:
+End index for the data
 ```csharp
 string endIndex [FromQuery] [Required] [No Default Value]
 ```
 
 
-Data interval:
+Data interval
 ```csharp
 string interval [FromQuery] [Required] [No Default Value]
 ```
 
 
-Data form:
+Data form
 ```csharp
 string form [FromQuery] [Required] [No Default Value]
 ```
 
 
-Max count of data points to retrieve:
+Optional, default is **preserve**. Using **refresh** causes Data View backing resources to be refreshed. See [Retrieving Data](#DataRetrieval)
 ```csharp
-Int32 maxcount [FromQuery] [Optional] [Default = 1000]
+string cache [FromQuery] [Optional] [Default = "refresh"]
 ```
 
 
-Cancellation token:
+Max count of data points to retrieve
 ```csharp
-CancellationToken token  [Optional] [Default = ""]
+Int32 maxCount [FromQuery] [Optional] [Default = 1000]
 ```
 
 
@@ -671,10 +2469,14 @@ CancellationToken token  [Optional] [Default = ""]
 
 #### 200
 
-Successfully retrieved data. Return type: ContentResult
+Successfully retrieved data
 
 ```json
-Returns data formatted according to the user settings. Output formats: Default, Table, Tableh, Csv, Csvh
+
+Time,Temperature,Flowrate,Volume
+2018-01-01T00:00:00Z,24,44,245
+2018-01-01T00:00:01Z,24,44,245
+2018-01-01T00:00:02Z,24,44,245
 ```
 
 #### 400
@@ -689,595 +2491,7 @@ Unauthorized
 
 #### 404
 
-Specified data view Id not found
-
-
-#### 500
-
-Internal server error
-
-***
-
-## `Get Data View Data`
-
-Get data from a specific session
-
-### Request
-`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/data/interpolated`
-
-### Parameters
-
-Id of tenant:
-```csharp
-string tenantId  [Required] [No Default Value]
-```
-
-
-Id of namespace:
-```csharp
-string namespaceId  [Required] [No Default Value]
-```
-
-
-Id of dataview:
-```csharp
-string id  [Required] [No Default Value]
-```
-
-
-Id of session:
-```csharp
-string sessionId [FromQuery] [Required] [No Default Value]
-```
-
-
-Form:
-```csharp
-string form [FromQuery] [Required] [No Default Value]
-```
-
-
-Skip:
-```csharp
-Int32 skip [FromQuery] [Required] [No Default Value]
-```
-
-
-Count:
-```csharp
-Int32 count [FromQuery] [Optional] [Default = 1000]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
-
-### Returns
-
-#### 200
-
-Successfully retrieved data. Return type: ContentResult
-
-```json
-Returns data formatted according to the user settings. Output formats: Default, Table, Tableh, Csv, Csvh
-```
-
-#### 400
-
-Bad request
-
-
-#### 403
-
-Unauthorized
-
-
-#### 404
-
-Specified data view Id or session Id not found
-
-
-#### 500
-
-Internal server error
-
-***
-
-## `Get Data Groups`
-
-Get data groups for a specified data view
-
-### Request
-`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/datagroups`
-
-### Parameters
-
-Id of tenant:
-```csharp
-string tenantId  [Required] [No Default Value]
-```
-
-
-Id of namespace:
-```csharp
-string namespaceId  [Required] [No Default Value]
-```
-
-
-Id of dataview:
-```csharp
-string id  [Required] [No Default Value]
-```
-
-
-Skip:
-```csharp
-Int32 skip [FromQuery] [Required] [No Default Value]
-```
-
-
-Count:
-```csharp
-Int32 count [FromQuery] [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
-
-### Returns
-
-#### 200
-
-Successfully retrieved data. Return type: DataGroupCollection
-
-```json
-{
-  "DataGroups": "Dictionary of <Int32, IDataGroup> pairs",
-  "Errors": "List`1"
-}
-```
-
-#### 207
-
-Multi-status. Look at response message. Return type: DataGroupCollection
-
-```json
-{
-  "DataGroups": "Dictionary of <Int32, IDataGroup> pairs",
-  "Errors": "List`1"
-}
-```
-
-#### 403
-
-Unauthorized
-
-
-#### 404
-
-Specified data view Id not found
-
-
-#### 500
-
-Internal server error
-
-***
-
-## `Get Data Group`
-
-Get a specific data group
-
-### Request
-`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/dataGroups/{dataGroupId}`
-
-### Parameters
-
-Id of tenant:
-```csharp
-string tenantId  [Required] [No Default Value]
-```
-
-
-Id of namespace:
-```csharp
-string namespaceId  [Required] [No Default Value]
-```
-
-
-Id of dataview:
-```csharp
-string id  [Required] [No Default Value]
-```
-
-
-Id of the data group:
-```csharp
-string dataGroupId  [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
-
-### Returns
-
-#### 200
-
-Successfully retrieved data group. Return type: DataGroup
-
-```json
-{
-  "Errors": "List`1",
-  "Tokens": "Dictionary of <String, Dictionary`2> pairs",
-  "DataItems": "Dictionary of <String, IDataItem> pairs"
-}
-```
-
-#### 403
-
-Unauthorized
-
-
-#### 404
-
-Specified data view Id not found
-
-
-#### 500
-
-Internal server error
-
-***
-
-## `Create Data View Session`
-
-Create a session for a dataview
-
-### Request
-`POST api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/sessions`
-
-### Parameters
-
-Id of tenant:
-```csharp
-string tenantId  [Required] [No Default Value]
-```
-
-
-Id of namespace:
-```csharp
-string namespaceId  [Required] [No Default Value]
-```
-
-
-Dataview id:
-```csharp
-string id  [Required] [No Default Value]
-```
-
-### Parameters from request body: 
-
-Session configuration object:
-```csharp
-SessionIndexAndTimeout sessionConfig [FromBody] [Required] [No Default Value]
-```
-
-```json
-{
-  "IndexConfig": "IndexConfig object",
-  "SessionTimeout": "String"
-}
-```
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
-
-### Returns
-
-#### 201
-
-Successfully created a session. Return type: SessionInfo
-
-```json
-{
-  "Id": "String",
-  "Status": "SessionStatus object",
-  "SessionTimeout": "String",
-  "CreatedDate": "DateTime",
-  "LastAccessedTime": "DateTime",
-  "DataViewDefinition": "DataViewDefinition object",
-  "DataGroups": "DataGroupCollection object",
-  "IdleTimeout": "TimeSpan"
-}
-```
-
-#### 400
-
-Bad request
-
-
-#### 403
-
-Unauthorized
-
-
-#### 404
-
-Specified data view id not found
-
-
-#### 500
-
-Internal server error
-
-***
-
-## `Get Data View Session`
-
-Get a specific session corresponding to a specific dataview
-
-### Request
-`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/sessions/{sessionId}`
-
-### Parameters
-
-Id of tenant:
-```csharp
-string tenantId  [Required] [No Default Value]
-```
-
-
-Id of namespace:
-```csharp
-string namespaceId  [Required] [No Default Value]
-```
-
-
-Dataview id:
-```csharp
-string id  [Required] [No Default Value]
-```
-
-
-Session Id:
-```csharp
-string sessionId  [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
-
-### Returns
-
-#### 200
-
-Successfully retrieved the session. Return type: SessionInfo
-
-```json
-{
-  "Id": "String",
-  "Status": "SessionStatus object",
-  "SessionTimeout": "String",
-  "CreatedDate": "DateTime",
-  "LastAccessedTime": "DateTime",
-  "DataViewDefinition": "DataViewDefinition object",
-  "DataGroups": "DataGroupCollection object",
-  "IdleTimeout": "TimeSpan"
-}
-```
-
-#### 403
-
-Unauthorized
-
-
-#### 404
-
-Session or dataview not found
-
-
-#### 500
-
-Internal server error
-
-***
-
-## `Get Data View Sessions`
-
-Get all sessions for a dataview
-
-### Request
-`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/sessions`
-
-### Parameters
-
-Id of tenant:
-```csharp
-string tenantId  [Required] [No Default Value]
-```
-
-
-Id of namespace:
-```csharp
-string namespaceId  [Required] [No Default Value]
-```
-
-
-Dataview id:
-```csharp
-string id  [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
-
-### Returns
-
-#### 200
-
-Successfully retrieved sessions. Return type: [SessionInfo]
-
-```json
-[
-{
-  "Id": "String",
-  "Status": "SessionStatus object",
-  "SessionTimeout": "String",
-  "CreatedDate": "DateTime",
-  "LastAccessedTime": "DateTime",
-  "DataViewDefinition": "DataViewDefinition object",
-  "DataGroups": "DataGroupCollection object",
-  "IdleTimeout": "TimeSpan"
-}
-]
-```
-
-#### 403
-
-Unauthorized
-
-
-#### 404
-
-Specified data view id not found
-
-
-#### 500
-
-Internal server error
-
-***
-
-## `Get Sessions`
-
-Get all sessions for all dataviews
-
-### Request
-`GET api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/sessions`
-
-### Parameters
-
-Id of tenant:
-```csharp
-string tenantId  [Required] [No Default Value]
-```
-
-
-Id of namespace:
-```csharp
-string namespaceId  [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
-
-### Returns
-
-#### 200
-
-Successfully retrieved all sessions. Return type: [SessionInfo]
-
-```json
-[
-{
-  "Id": "String",
-  "Status": "SessionStatus object",
-  "SessionTimeout": "String",
-  "CreatedDate": "DateTime",
-  "LastAccessedTime": "DateTime",
-  "DataViewDefinition": "DataViewDefinition object",
-  "DataGroups": "DataGroupCollection object",
-  "IdleTimeout": "TimeSpan"
-}
-]
-```
-
-#### 500
-
-Internal server error
-
-***
-
-## `Delete Data View Session`
-
-Delete a specific session
-
-### Request
-`DELETE api/tenants/{tenantId}/namespaces/{namespaceId}/dataviews/{id}/sessions/{sessionId}`
-
-### Parameters
-
-Id of tenant:
-```csharp
-string tenantId  [Required] [No Default Value]
-```
-
-
-Id of namespace:
-```csharp
-string namespaceId  [Required] [No Default Value]
-```
-
-
-Id of dataview:
-```csharp
-string id  [Required] [No Default Value]
-```
-
-
-Id of the session:
-```csharp
-string sessionId  [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken token  [Optional] [Default = ""]
-```
-
-
-### Returns
-
-#### 204
-
-Successfully deleted session
-
-
-#### 403
-
-Unauthorized
-
-
-#### 404
-
-Session with specified Id not found
+Specified Data View Id not found
 
 
 #### 500
