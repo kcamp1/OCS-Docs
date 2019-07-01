@@ -1,8 +1,8 @@
 ---
-uid: Data RetrievalApi
+uid: DataRetrievalApi
 ---
 
-# Data Retrieval
+# DataRetrieval
 
 APIs for Retrieving Data
 
@@ -17,69 +17,63 @@ Get data for the provided index parameters with paging
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 
-Id of dataview:
+Id of dataview
 ```csharp
 string id  [Required] [No Default Value]
 ```
 
 
-Start time of the data:
+Optional, specifies beginning date and time. The default value is specified in the [Index Config](IndexConfig.md).
 ```csharp
 string startIndex [FromQuery] [Required] [No Default Value]
 ```
 
 
-End time of the data:
+Optional, specifies end date and time. The default value is specified in the [Index Config](IndexConfig.md).
 ```csharp
 string endIndex [FromQuery] [Required] [No Default Value]
 ```
 
 
-Data interval:
+Optional, specifies data retrieval interval. The default value is specified in the [Index Config](IndexConfig.md).
 ```csharp
 string interval [FromQuery] [Required] [No Default Value]
 ```
 
 
-Cache:
-```csharp
-string cache [FromQuery] [Required] [No Default Value]
-```
-
-
-Data form:
+Optional, specifies the data [output format](DataOutputFormats.md). Output formats: default, table, tableh, csv, csvh
 ```csharp
 string form [FromQuery] [Required] [No Default Value]
 ```
 
 
-Paging Token:
+Not used on the first data call. Afterwards, a continuationToken is provided in the Next Page HTTPS response header. It contains all necessary information for the next page of data such as index config and resolved resources.
 ```csharp
 string continuationToken [FromQuery] [Required] [No Default Value]
 ```
 
 
-Count of data points to retrieve per page:
+Optional, specifies cache behavior. Used only on the first data call; the default value is **refresh**. Ignored if used with the continuationToken.
 ```csharp
-Int32 pageSize [FromQuery] [Optional] [Default = 1000]
+string cache [FromQuery] [Optional] [Default = "refresh"]
 ```
 
 
-Cancellation token:
+Optional, specifies the total count retrieved events. The default value is 1000. The maximum is 250,000.
 ```csharp
-CancellationToken cancellationToken  [Optional] [Default = ""]
+Int32 count [FromQuery] [Optional] [Default = 1000]
 ```
 
 
@@ -87,10 +81,14 @@ CancellationToken cancellationToken  [Optional] [Default = ""]
 
 #### 200
 
-Successfully retrieved data. Return type: ContentResult
+Successfully retrieved data
 
 ```json
-Returns data formatted according to the user settings. Output formats: Default, Table, Tableh, Csv, Csvh
+
+Time,Temperature,Flowrate,Volume
+2018-01-01T00:00:00Z,24,44,245
+2018-01-01T00:00:01Z,24,44,245
+2018-01-01T00:00:02Z,24,44,245
 ```
 
 #### 400
@@ -123,45 +121,39 @@ Get Data Groups for a specified Data View
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 
-Id of dataview:
+Id of dataview
 ```csharp
 string id  [Required] [No Default Value]
 ```
 
 
-The number of items to skip:
+Optional, default is **preserve**. Using **refresh** causes Data View backing resources to be refreshed. See [Retrieving Data](#DataRetrieval)
 ```csharp
-Int32 skip [FromQuery] [Required] [No Default Value]
+string cache [FromQuery] [Optional] [Default = "preserve"]
 ```
 
 
-The number of items to display per page:
+The number of data groups to skip
 ```csharp
-Int32 count [FromQuery] [Required] [No Default Value]
+Int32 skip [FromQuery] [Optional] [Default = 0]
 ```
 
 
-Cache behavior to use:
+The number of data groups to display per page. Maximum count allowed is 1000
 ```csharp
-string cache  [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken cancellationToken  [Optional] [Default = ""]
+Int32 count [FromQuery] [Optional] [Default = 100]
 ```
 
 
@@ -169,93 +161,81 @@ CancellationToken cancellationToken  [Optional] [Default = ""]
 
 #### 200
 
-Successfully retrieved data. Return type: DataGroupCollection
+Successfully retrieved data
 
 ```json
 {
-  "TimeOfResolution": "TimeOfResolution",
-  "Errors": {
-    "OperationId": "OperationId",
-    "Error": "Error",
-    "Reason": "Reason",
-    "Resolution": "Resolution",
-    "AdditionalParameters": {
-      "Chars": "Chars",
-      "Length": "Length"
+  "TimeOfResolution": "DateTimeOffset",
+  "DataGroups": [
+    {
+      "TimeOfResolution": "DateTimeOffset",
+      "Id": "Int32",
+      "ItemCount": "Int32",
+      "Tokens": [
+        {
+          "Chars": "Char",
+          "Length": "Int32"
+        }
+      ],
+      "DataItems": [
+        {
+          "ItemType": "ItemType enumeration",
+          "Id": "String",
+          "Name": "String",
+          "TenantId": "String",
+          "NamespaceId": "String"
+        }
+      ]
     }
-  },
-  "DataGroups": {
-    "TimeOfResolution": "TimeOfResolution",
-    "Id": "Id",
-    "ItemCount": "ItemCount",
-    "Errors": {
-      "OperationId": "OperationId",
-      "Error": "Error",
-      "Reason": "Reason",
-      "Resolution": "Resolution",
-      "AdditionalParameters": {
-        "Chars": "Chars",
-        "Length": "Length"
-      }
-    },
-    "Tokens": {
-      "Chars": "Chars",
-      "Length": "Length"
-    },
-    "DataItems": {
-      "ItemType": "ItemType enumeration",
-      "Id": "Id",
-      "Name": "Name",
-      "TenantId": "TenantId",
-      "NamespaceId": "NamespaceId"
-    }
-  }
+  ]
 }
 ```
 
 #### 207
 
-Multi-status. Look at response message. Return type: DataGroupCollection
+Multi-status. Look at response message
 
 ```json
 {
-  "TimeOfResolution": "TimeOfResolution",
-  "Errors": {
-    "OperationId": "OperationId",
-    "Error": "Error",
-    "Reason": "Reason",
-    "Resolution": "Resolution",
-    "AdditionalParameters": {
-      "Chars": "Chars",
-      "Length": "Length"
+  "TimeOfResolution": "DateTimeOffset",
+  "Errors": [
+    {
+      "OperationId": "String",
+      "Error": "String",
+      "Reason": "String",
+      "Resolution": "String"
     }
-  },
-  "DataGroups": {
-    "TimeOfResolution": "TimeOfResolution",
-    "Id": "Id",
-    "ItemCount": "ItemCount",
-    "Errors": {
-      "OperationId": "OperationId",
-      "Error": "Error",
-      "Reason": "Reason",
-      "Resolution": "Resolution",
-      "AdditionalParameters": {
-        "Chars": "Chars",
-        "Length": "Length"
-      }
-    },
-    "Tokens": {
-      "Chars": "Chars",
-      "Length": "Length"
-    },
-    "DataItems": {
-      "ItemType": "ItemType enumeration",
-      "Id": "Id",
-      "Name": "Name",
-      "TenantId": "TenantId",
-      "NamespaceId": "NamespaceId"
+  ],
+  "DataGroups": [
+    {
+      "TimeOfResolution": "DateTimeOffset",
+      "Id": "Int32",
+      "ItemCount": "Int32",
+      "Errors": [
+        {
+          "OperationId": "String",
+          "Error": "String",
+          "Reason": "String",
+          "Resolution": "String"
+        }
+      ],
+      "Tokens": [
+        {
+          "Chars": "Char",
+          "Length": "Int32"
+        }
+      ],
+      "DataItems": [
+        {
+          "ItemType": "ItemType enumeration",
+          "Id": "String",
+          "Name": "String",
+          "TenantId": "String",
+          "NamespaceId": "String"
+        }
+      ]
     }
-  }
+  ]
 }
 ```
 
@@ -284,39 +264,33 @@ Get a specific Data Group
 
 ### Parameters
 
-Id of tenant:
+Id of tenant
 ```csharp
 string tenantId  [Required] [No Default Value]
 ```
 
 
-Id of namespace:
+Id of namespace
 ```csharp
 string namespaceId  [Required] [No Default Value]
 ```
 
 
-Id of Data View:
+Id of Data View
 ```csharp
 string id  [Required] [No Default Value]
 ```
 
 
-Id of the data group:
+Id of the data group
 ```csharp
 string dataGroupId  [Required] [No Default Value]
 ```
 
 
-Cache behavior to use:
+Optional, default is **preserve**. Using **refresh** causes Data View backing resources to be refreshed. See [Retrieving Data](#DataRetrieval)
 ```csharp
-string cache  [Required] [No Default Value]
-```
-
-
-Cancellation token:
-```csharp
-CancellationToken cancellationToken  [Optional] [Default = ""]
+string cache  [Optional] [Default = "preserve"]
 ```
 
 
@@ -324,34 +298,63 @@ CancellationToken cancellationToken  [Optional] [Default = ""]
 
 #### 200
 
-Successfully retrieved data group. Return type: DataGroup
+Successfully retrieved data group
 
 ```json
 {
-  "TimeOfResolution": "TimeOfResolution",
-  "Id": "Id",
-  "ItemCount": "ItemCount",
-  "Errors": {
-    "OperationId": "OperationId",
-    "Error": "Error",
-    "Reason": "Reason",
-    "Resolution": "Resolution",
-    "AdditionalParameters": {
-      "Chars": "Chars",
-      "Length": "Length"
+  "TimeOfResolution": "DateTimeOffset",
+  "Id": "Int32",
+  "ItemCount": "Int32",
+  "Tokens": [
+    {
+      "Chars": "Char",
+      "Length": "Int32"
     }
-  },
-  "Tokens": {
-    "Chars": "Chars",
-    "Length": "Length"
-  },
-  "DataItems": {
-    "ItemType": "ItemType enumeration",
-    "Id": "Id",
-    "Name": "Name",
-    "TenantId": "TenantId",
-    "NamespaceId": "NamespaceId"
-  }
+  ],
+  "DataItems": [
+    {
+      "ItemType": "ItemType enumeration",
+      "Id": "String",
+      "Name": "String",
+      "TenantId": "String",
+      "NamespaceId": "String"
+    }
+  ]
+}
+```
+
+#### 207
+
+Multi-status. Look at response message
+
+```json
+{
+  "TimeOfResolution": "DateTimeOffset",
+  "Id": "Int32",
+  "ItemCount": "Int32",
+  "Errors": [
+    {
+      "OperationId": "String",
+      "Error": "String",
+      "Reason": "String",
+      "Resolution": "String"
+    }
+  ],
+  "Tokens": [
+    {
+      "Chars": "Char",
+      "Length": "Int32"
+    }
+  ],
+  "DataItems": [
+    {
+      "ItemType": "ItemType enumeration",
+      "Id": "String",
+      "Name": "String",
+      "TenantId": "String",
+      "NamespaceId": "String"
+    }
+  ]
 }
 ```
 
@@ -380,21 +383,15 @@ Get mappings for a dataview by Id
 
 ### Parameters
 
-Id of the dataview:
+Id of the dataview
 ```csharp
 string id  [Required] [No Default Value]
 ```
 
 
-Cache behavior to use:
+Optional, default is **preserve**. Using **refresh** causes Data View backing resources to be refreshed. See [Retrieving Data](#DataRetrieval)
 ```csharp
-string cache [FromQuery] [Required] [No Default Value]
-```
-
-
-Cancellation Token:
-```csharp
-CancellationToken cancellationToken  [Optional] [Default = ""]
+string cache [FromQuery] [Optional] [Default = "preserve"]
 ```
 
 
@@ -402,36 +399,42 @@ CancellationToken cancellationToken  [Optional] [Default = ""]
 
 #### 200
 
-Successfully retrieved data mappings. Return type: Mappings
+Successfully retrieved data mappings
 
 ```json
 {
-  "SharedMappingRules": {
-    "Id": "Id",
-    "Token": "Token",
-    "MappingRulePattern": {
-      "PropertyPaths": {
-        "Chars": "Chars",
-        "Length": "Length"
-      },
-      "ItemIdentifier": {
-        "FilterResource": "FilterResource enumeration",
-        "FilterField": "FilterField enumeration",
-        "Name": "Name",
-        "Value": "Value",
-        "FilterFunction": "FilterFunction enumeration"
+  "SharedMappingRules": [
+    {
+      "Id": "String",
+      "Token": "String",
+      "MappingRulePattern": {
+        "PropertyPaths": [
+          {
+            "Chars": "Char",
+            "Length": "Int32"
+          }
+        ],
+        "ItemIdentifier": {
+          "FilterResource": "FilterResource enumeration",
+          "FilterField": "FilterField enumeration",
+          "Name": "String",
+          "Value": "String",
+          "FilterFunction": "FilterFunction enumeration"
+        }
       }
     }
-  },
-  "Columns": {
-    "Name": "Name",
-    "NamespaceId": "NamespaceId",
-    "MappingRule": {},
-    "IsKey": "IsKey",
-    "DataType": "DataType",
-    "UOM": "UOM"
-  },
-  "IsDefault": "IsDefault"
+  ],
+  "Columns": [
+    {
+      "Name": "String",
+      "NamespaceId": "String",
+      "MappingRule": {},
+      "IsKey": "Boolean",
+      "DataType": "String",
+      "UOM": "String"
+    }
+  ],
+  "IsDefault": "Boolean"
 }
 ```
 
@@ -460,33 +463,27 @@ Get data items for a dataview by Id
 
 ### Parameters
 
-Id of the dataview:
+Id of the dataview
 ```csharp
 string id  [Required] [No Default Value]
 ```
 
 
-The number of items to skip:
+Optional, default value is **preserve**. Using **refresh** causes Data View backing resources to be refreshed. See [Retrieving Data](#DataRetrieval)
 ```csharp
-Int32 skip [FromQuery] [Required] [No Default Value]
+string cache [FromQuery] [Optional] [Default = "preserve"]
 ```
 
 
-The number of items to display per page:
+The number of data items to skip
 ```csharp
-Int32 count [FromQuery] [Required] [No Default Value]
+Int32 skip [FromQuery] [Optional] [Default = 0]
 ```
 
 
-Cache behavior to use:
+The number of data items to display per page. Maximum count allowed is 1000
 ```csharp
-string cache [FromQuery] [Required] [No Default Value]
-```
-
-
-Cancellation Token:
-```csharp
-CancellationToken cancellationToken  [Optional] [Default = ""]
+Int32 count [FromQuery] [Optional] [Default = 100]
 ```
 
 
@@ -494,19 +491,47 @@ CancellationToken cancellationToken  [Optional] [Default = ""]
 
 #### 200
 
-Successfully retrieved data items. Return type: DataItemCollection
+Successfully retrieved data items
 
 ```json
 {
-  "TimeOfResolution": "TimeOfResolution",
-  "Count": "Count",
-  "Items": {
-    "ItemType": "ItemType enumeration",
-    "Id": "Id",
-    "Name": "Name",
-    "TenantId": "TenantId",
-    "NamespaceId": "NamespaceId"
-  }
+  "TimeOfResolution": "DateTimeOffset",
+  "Items": [
+    {
+      "ItemType": "ItemType enumeration",
+      "Id": "String",
+      "Name": "String",
+      "TenantId": "String",
+      "NamespaceId": "String"
+    }
+  ]
+}
+```
+
+#### 207
+
+Multi-status. Look at response message
+
+```json
+{
+  "TimeOfResolution": "DateTimeOffset",
+  "Errors": [
+    {
+      "OperationId": "String",
+      "Error": "String",
+      "Reason": "String",
+      "Resolution": "String"
+    }
+  ],
+  "Items": [
+    {
+      "ItemType": "ItemType enumeration",
+      "Id": "String",
+      "Name": "String",
+      "TenantId": "String",
+      "NamespaceId": "String"
+    }
+  ]
 }
 ```
 
@@ -535,21 +560,15 @@ Get statistics for a dataview by Id
 
 ### Parameters
 
-Id of the dataview:
+Id of the dataview
 ```csharp
 string id  [Required] [No Default Value]
 ```
 
 
-Cache behavior to use:
+Optional, default is **preserve**. Using **refresh** causes Data View backing resources to be refreshed. See [Retrieving Data](#DataRetrieval)
 ```csharp
-string cache [FromQuery] [Required] [No Default Value]
-```
-
-
-Cancellation Token:
-```csharp
-CancellationToken cancellationToken  [Optional] [Default = ""]
+string cache [FromQuery] [Optional] [Default = "preserve"]
 ```
 
 
@@ -557,14 +576,14 @@ CancellationToken cancellationToken  [Optional] [Default = ""]
 
 #### 200
 
-Successfully retrieved data view statistics. Return type: DataViewInstanceStatistics
+Successfully retrieved data view statistics
 
 ```json
 {
-  "TimeOfResolution": "TimeOfResolution",
-  "DataItemsCount": "DataItemsCount",
-  "DataGroupsCount": "DataGroupsCount",
-  "ColumnCount": "ColumnCount"
+  "TimeOfResolution": "DateTimeOffset",
+  "DataItemsCount": "Int32",
+  "DataGroupsCount": "Int32",
+  "ColumnCount": "Int32"
 }
 ```
 
